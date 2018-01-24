@@ -19,6 +19,8 @@ public class MyFaveActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_fave);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("My Favorite Celebrity List");
 
         recyclerView = (RecyclerView) findViewById(R.id.myfave_recycler_view);
 
