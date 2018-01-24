@@ -1,4 +1,4 @@
-package com.example.user.recyclerviewcelebrity;
+package com.example.user.celebrity;
 
 import org.junit.Test;
 
