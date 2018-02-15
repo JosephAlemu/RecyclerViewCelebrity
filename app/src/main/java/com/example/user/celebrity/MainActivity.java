@@ -1,27 +1,33 @@
 package com.example.user.celebrity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnStartDragListener{
+
 
 
     private List<Person> PersonList = new ArrayList<>();
     private RecyclerView recyclerView;
     private PersonAdapter mAdapter;
+    ItemTouchHelper mItemTouchHelper;
 
     DBAdapter myDb;
 
@@ -44,7 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
         PersonList = getCelebrityRecordSet(cursor);
 
-        mAdapter = new PersonAdapter(this,PersonList );
+        mAdapter = new PersonAdapter(this,PersonList ,  this);
+
+
+        ItemTouchHelper.Callback callback =
+                new EditItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -180,4 +194,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }
 }

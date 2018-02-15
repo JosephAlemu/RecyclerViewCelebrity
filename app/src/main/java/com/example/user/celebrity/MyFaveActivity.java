@@ -1,26 +1,39 @@
 package com.example.user.celebrity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFaveActivity extends AppCompatActivity {
+public class MyFaveActivity extends AppCompatActivity  implements OnStartDragListener{
+
+
+
     private List<Person> PersonList;
     private RecyclerView recyclerView;
     DBAdapter myDb;
     private PersonAdapter mAdapter;
+
+    ItemTouchHelper mItemTouchHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_fave);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("My Favorite Celebrity List");
+
+
 
         recyclerView = (RecyclerView) findViewById(R.id.myfave_recycler_view);
 
@@ -34,7 +47,14 @@ public class MyFaveActivity extends AppCompatActivity {
 
         PersonList = getMyFavoritRecordSet(cursor);
 
-        mAdapter = new PersonAdapter(this,PersonList );
+        mAdapter = new PersonAdapter(this, PersonList, this);
+
+        ItemTouchHelper.Callback callback =
+                new EditItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -59,8 +79,6 @@ public class MyFaveActivity extends AppCompatActivity {
     }
 
 
-
-
     private ArrayList<Person> getMyFavoritRecordSet(Cursor cursor) {
 
         ArrayList<Person> myFavoriteelebrityList = new ArrayList<Person>();
@@ -71,7 +89,7 @@ public class MyFaveActivity extends AppCompatActivity {
         // Reset cursor to start, checking to see if there's data:
         if (cursor.moveToFirst()) {
             do {
-                int like  = cursor.getInt(DBAdapter.COL_LIKE);
+                int like = cursor.getInt(DBAdapter.COL_LIKE);
 
                 if (like == 1)
 
@@ -82,9 +100,9 @@ public class MyFaveActivity extends AppCompatActivity {
                     int image = cursor.getInt(DBAdapter.COL_IMAGE);
 
 
-                    Person person = new  Person(id, name,title,image, like);
+                    Person person = new Person(id, name, title, image, like);
 
-                    myFavoriteelebrityList.add( person);
+                    myFavoriteelebrityList.add(person);
 
                 }
 
@@ -99,6 +117,10 @@ public class MyFaveActivity extends AppCompatActivity {
         return myFavoriteelebrityList;
     }
 
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }
 
 
 
